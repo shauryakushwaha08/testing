@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+        .container {
+            text-align: center;
+            max-width: 300px;
+        }
+        .input {
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .button {
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Enter Password to Access Files</h2>
+        <input type="password" id="password" placeholder="Password" class="input">
+        <button onclick="checkPassword()" class="button">Submit</button>
+        <p id="error-message" style="color: red; display: none;">Incorrect password. Try again.</p>
+    </div>
+
+    <script>
+        function checkPassword() {
+            // Set your password here
+            const password = "yourpassword";
+            const userInput = document.getElementById("password").value;
+            if (userInput === password) {
+                // Redirect to the protected content if password is correct
+                window.location.href = "protected-content.html";
+            } else {
+                document.getElementById("error-message").style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

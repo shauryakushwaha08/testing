@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protected Files</title>
+    <title>Access PDF</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
         }
         .container {
             text-align: center;
             max-width: 300px;
         }
-        .input {
+        input[type="password"] {
             padding: 10px;
             margin-top: 10px;
             width: 100%;
         }
-        .button {
+        button {
             padding: 10px;
             margin-top: 10px;
             width: 100%;
@@ -32,27 +30,85 @@
             border: none;
             cursor: pointer;
         }
+        #pdf-viewer {
+            width: 100%;
+            height: 600px;
+            display: none;
+            margin-top: 20px;
+        }
+        #error-message {
+            color: red;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Enter Password to Access Files</h2>
-        <input type="password" id="password" placeholder="Password" class="input">
-        <button onclick="checkPassword()" class="button">Submit</button>
-        <p id="error-message" style="color: red; display: none;">Incorrect password. Try again.</p>
+        <h2>Enter Password to View PDF</h2>
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="openPDF()">Submit</button>
+        <p id="error-message">Incorrect password. Please try again.</p>
+        <div id="pdf-viewer">
+            <canvas id="pdf-canvas"></canvas>
+        </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
     <script>
-        function checkPassword() {
-            // Set your password here
-            const password = "yourpassword";
-            const userInput = document.getElementById("password").value;
-            if (userInput === password) {
-                // Redirect to the protected content if password is correct
-                window.location.href = "protected-content.html";
+        // PDF.js worker source
+        const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        // Set PDF.js worker src (not necessary if you use the CDN version)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+
+        function openPDF() {
+            const password = document.getElementById('password').value;
+            const correctPassword = 'yourpassword'; // Set your PDF password here
+
+            if (password === correctPassword) {
+                // PDF URL on GitHub (raw link to the file)
+                const pdfUrl = 'https://github.com/username/repo/raw/main/path/to/your/file.pdf'; // Replace with your file path
+
+                // Open the PDF file
+                loadPDF(pdfUrl, password);
             } else {
-                document.getElementById("error-message").style.display = "block";
+                // Display error if password is incorrect
+                document.getElementById('error-message').style.display = 'block';
             }
+        }
+
+        function loadPDF(pdfUrl, password) {
+            // Create a PDF document from the URL
+            const loadingTask = pdfjsLib.getDocument({
+                url: pdfUrl,
+                password: password // Use the password for decryption
+            });
+
+            loadingTask.promise.then(function(pdf) {
+                // Hide password input and error message, show the PDF viewer
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('pdf-viewer').style.display = 'block';
+
+                // Render the first page of the PDF
+                pdf.getPage(1).then(function(page) {
+                    const canvas = document.getElementById('pdf-canvas');
+                    const context = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    // Render PDF page into the canvas
+                    page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    });
+                });
+            }).catch(function(error) {
+                // Handle errors (invalid password or PDF not found)
+                console.error(error);
+                alert('Error loading PDF. Please check the password or file.');
+            });
         }
     </script>
 </body>

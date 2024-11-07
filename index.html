@@ -64,18 +64,8 @@
 
         function openPDF() {
             const password = document.getElementById('password').value;
-            const correctPassword = 'yourpassword'; // Set your PDF password here
-
-            if (password === correctPassword) {
-                // PDF URL on GitHub (raw link to the file)
-                const pdfUrl = 'https://github.com/username/repo/raw/main/path/to/your/file.pdf'; // Replace with your file path
-
-                // Open the PDF file
-                loadPDF(pdfUrl, password);
-            } else {
-                // Display error if password is incorrect
-                document.getElementById('error-message').style.display = 'block';
-            }
+            const pdfUrl = 'https://github.com/shauryakushwaha08/testing/blob/main/sample%20file.pdf'; // Replace with your file path
+            loadPDF(pdfUrl, password);
         }
 
         function loadPDF(pdfUrl, password) {
